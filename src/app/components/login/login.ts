@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { AuthService } from '../../services/auth-service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -12,16 +12,15 @@ import { Router } from '@angular/router';
   styleUrl: './login.scss'
 })
 export class LoginComponent {
+  form: FormGroup;
   loading = false;
   error: string | null = null;
-  form!: FormGroup; // dichiarazione senza inizializzazione
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router
   ) {
-    // Inizializza qui il form, ora fb è disponibile
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -35,7 +34,7 @@ export class LoginComponent {
     this.auth.login(this.form.value).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/']);
+        this.router.navigate(['/profile']);
       },
       error: err => {
         this.loading = false;

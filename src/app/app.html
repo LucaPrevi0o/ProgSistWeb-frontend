@@ -6,7 +6,12 @@
         <li><a routerLink="/products">Prodotti</a></li>
         <li><a routerLink="/cart">Carrello</a></li>
         <li><a routerLink="/orders">Ordini</a></li>
-        <li><a routerLink="/login">Login</a></li>
+        <li *ngIf="!user"><a routerLink="/login">Login</a></li>
+        <li *ngIf="user" class="profile-menu">
+          <a routerLink="/profile">My Profile</a>
+          -
+          <a href="#" (click)="logout()">Logout</a>
+        </li>
       </ul>
     </nav>
   </header>

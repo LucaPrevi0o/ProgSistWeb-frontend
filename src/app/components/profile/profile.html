@@ -1,0 +1,12 @@
+<div class="profile-container" *ngIf="user">
+  <h2>Profilo Utente</h2>
+  <ul>
+    <li><strong>Nome:</strong> {{ user.name }}</li>
+    <li><strong>Email:</strong> {{ user.email }}</li>
+    <li><strong>Ruolo:</strong> {{ user.role }}</li>
+    <li><strong>ID:</strong> {{ user.id }}</li>
+  </ul>
+</div>
+<div *ngIf="!user" class="error">
+  Nessun utente loggato.
+</div>
