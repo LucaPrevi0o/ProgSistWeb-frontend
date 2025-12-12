@@ -1,0 +1,64 @@
+<div class="product-list-container">
+  <h1>Catalogo Prodotti</h1>
+
+  <!-- Filtri -->
+  <div class="filters">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        placeholder="Cerca prodotti..."
+        (keyup.enter)="onSearch()"
+      />
+      <button (click)="onSearch()">Cerca</button>
+    </div>
+
+    <div class="category-filter">
+      <label for="category">Categoria:</label>
+      <select id="category" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+        <option value="">Tutte</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+    <button class="clear-filters" (click)="clearFilters()">Pulisci filtri</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <p>Caricamento prodotti...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadProducts()">Riprova</button>
+  </div>
+
+  <!-- Lista prodotti -->
+  <div *ngIf="!loading && !error" class="products-grid">
+    <div *ngFor="let product of products" class="product-card">
+      <img [src]="product.image_url" [alt]="product.name" />
+      <div class="product-info">
+        <h3>{{ product.name }}</h3>
+        <p class="description">{{ product.description }}</p>
+        <p class="category">{{ product.category }}</p>
+        <p class="price">€ {{ product.price | number:'1.2-2' }}</p>
+        <p class="stock" [class.out-of-stock]="product.stock_quantity === 0">
+          {{ product.stock_quantity > 0 ? 'Disponibile' : 'Esaurito' }}
+        </p>
+        <div class="actions">
+          <a [routerLink]="['/products', product.id]" class="btn-detail">Dettagli</a>
+          <button class="btn-cart" [disabled]="product.stock_quantity === 0">
+            Aggiungi al carrello
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nessun prodotto -->
+  <div *ngIf="!loading && !error && products.length === 0" class="no-products">
+    <p>Nessun prodotto trovato.</p>
+  </div>
+</div>
