@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -22,15 +22,21 @@ export class ProductListComponent implements OnInit {
   selectedCategory = '';
   categories: string[] = [];
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    console.log('Component initialized');
     this.loadProducts();
   }
 
   loadProducts(): void {
+    console.log('loadProducts started, setting loading = true');
     this.loading = true;
     this.error = null;
+    this.cdr.markForCheck();
     
     const filters: any = {};
     if (this.searchQuery) filters.q = this.searchQuery;
@@ -45,6 +51,8 @@ export class ProductListComponent implements OnInit {
         this.products = products;
         this.extractCategories(products);
         this.loading = false;
+        console.log('Setting loading = false');
+        this.cdr.detectChanges(); // Forza aggiornamento UI
       },
       error: (err) => {
         console.error('ERROR: Failed to load products:', err);
@@ -55,6 +63,7 @@ export class ProductListComponent implements OnInit {
         });
         this.error = 'Errore nel caricamento dei prodotti';
         this.loading = false;
+        this.cdr.detectChanges();
       },
       complete: () => {
         console.log('HTTP call completed');
@@ -79,5 +88,9 @@ export class ProductListComponent implements OnInit {
     this.searchQuery = '';
     this.selectedCategory = '';
     this.loadProducts();
+  }
+
+  onImageError(event: any): void {
+    event.target.src = 'https://placehold.co/300x200/cccccc/666666?text=No+Image';
   }
 }

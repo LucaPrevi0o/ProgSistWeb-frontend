@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService, Product } from '../../services/product';
@@ -19,7 +19,8 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -34,16 +35,20 @@ export class ProductDetailComponent implements OnInit {
   loadProduct(id: number): void {
     this.loading = true;
     this.error = null;
+    this.cdr.markForCheck();
 
     this.productService.getProduct(id).subscribe({
       next: (product) => {
+        console.log('Product loaded:', product);
         this.product = product;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Errore nel caricamento del prodotto';
         console.error('Error loading product:', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap, catchError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Product {
@@ -15,22 +15,16 @@ export interface Product {
   updated_at: string;
 }
 
-export interface ProductListResponse {
-  products: Product[];
-  total?: number;
-  page?: number;
-  per_page?: number;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   private apiUrl = `${environment.apiUrl}/products`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    console.log('ProductService initialized with apiUrl:', this.apiUrl);
+  }
 
-  // GET /products con filtri opzionali
   getProducts(filters?: {
     category?: string;
     q?: string;
@@ -46,15 +40,23 @@ export class ProductService {
       if (filters.per_page) params = params.set('per_page', filters.per_page.toString());
     }
 
-    return this.http.get<Product[]>(this.apiUrl, { params });
+    const url = `${this.apiUrl}?${params.toString()}`;
+    console.log('Making HTTP GET request to:', url);
+
+    return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
+      tap(response => console.log('HTTP response received:', response)),
+      catchError(error => {
+        console.error('HTTP error occurred:', error);
+        throw error;
+      })
+    );
   }
 
-  // GET /products/:id
   getProduct(id: number): Observable<Product> {
+    console.log('Getting product:', id);
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
 
-  // Per future funzionalità admin
   createProduct(product: Partial<Product>): Observable<Product> {
     return this.http.post<Product>(this.apiUrl, product);
   }
