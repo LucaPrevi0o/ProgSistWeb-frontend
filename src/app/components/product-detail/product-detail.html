@@ -1,0 +1,70 @@
+<div class="product-detail-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <p>Caricamento prodotto...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="goBack()">Torna ai prodotti</button>
+  </div>
+
+  <!-- Product Detail -->
+  <div *ngIf="!loading && !error && product" class="product-detail">
+    <button class="back-button" (click)="goBack()">
+      ← Torna ai prodotti
+    </button>
+
+    <div class="product-content">
+      <div class="product-image-section">
+        <img [src]="product.image_url" [alt]="product.name" />
+      </div>
+
+      <div class="product-info-section">
+        <div class="product-header">
+          <h1>{{ product.name }}</h1>
+          <span class="category-badge">{{ product.category }}</span>
+        </div>
+
+        <div class="product-price">
+          <span class="price">€ {{ product.price | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="product-description">
+          <h3>Descrizione</h3>
+          <p>{{ product.description }}</p>
+        </div>
+
+        <div class="product-stock">
+          <p *ngIf="product.stock_quantity > 0" class="in-stock">
+            ✓ Disponibile ({{ product.stock_quantity }} pezzi)
+          </p>
+          <p *ngIf="product.stock_quantity === 0" class="out-of-stock">
+            ✗ Non disponibile
+          </p>
+        </div>
+
+        <div class="product-actions" *ngIf="product.stock_quantity > 0">
+          <div class="quantity-selector">
+            <label>Quantità:</label>
+            <div class="quantity-controls">
+              <button (click)="decreaseQuantity()" [disabled]="quantity <= 1">-</button>
+              <span class="quantity-value">{{ quantity }}</span>
+              <button (click)="increaseQuantity()" [disabled]="quantity >= product.stock_quantity">+</button>
+            </div>
+          </div>
+
+          <button class="add-to-cart-btn" (click)="addToCart()">
+            Aggiungi al carrello
+          </button>
+        </div>
+
+        <div class="product-meta">
+          <p><strong>ID:</strong> {{ product.id }}</p>
+          <p><strong>Aggiunto il:</strong> {{ product.created_at | date:'dd/MM/yyyy' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
