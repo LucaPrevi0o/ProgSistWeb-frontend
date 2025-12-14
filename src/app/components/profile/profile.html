@@ -1,11 +1,33 @@
 <div class="profile-container" *ngIf="user">
   <h2>Profilo Utente</h2>
   <ul>
-    <li><strong>Nome:</strong> {{ user.name }}</li>
+    <li><strong>Cognome:</strong> {{ userInfo?.last_name || '-' }}</li>
+    <li><strong>Nome:</strong> {{ userInfo?.first_name || '-' }}</li>
     <li><strong>Email:</strong> {{ user.email }}</li>
-    <li><strong>Ruolo:</strong> {{ user.role }}</li>
-    <li><strong>ID:</strong> {{ user.id }}</li>
   </ul>
+
+  <div class="profile-buttons-row">
+    <button
+      class="btn-user-info"
+      (click)="toggleAdditionalInfo()"
+      [disabled]="!userInfo">
+      {{ showAdditionalInfo ? 'Nascondi' : 'Mostra' }} informazioni aggiuntive
+    </button>
+    <button class="btn-user-info" (click)="goToUserInfo()">Modifica informazioni personali</button>
+  </div>
+
+  <div *ngIf="showAdditionalInfo" class="additional-info-block">
+    <hr>
+    <ng-container *ngIf="userInfo">
+      <ul>
+        <li><strong>Telefono:</strong> {{ userInfo.phone }}</li>
+        <li><strong>Indirizzo:</strong> {{ userInfo.address.street }} {{ userInfo.address.number }}</li>
+        <li><strong>Città:</strong> {{ userInfo.address.city }}</li>
+        <li><strong>CAP:</strong> {{ userInfo.address.zip }}</li>
+        <li><strong>Provincia:</strong> {{ userInfo.address.province }}</li>
+      </ul>
+    </ng-container>
+  </div>
 </div>
 <div *ngIf="!user" class="error">
   Nessun utente loggato.

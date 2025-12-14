@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
+import { UserInfoService } from '../../services/user-info-service'; // <--- importa il servizio
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
+    private userInfoService: UserInfoService, // <--- aggiungi qui
     private router: Router
   ) {
     this.form = this.fb.group({
@@ -33,8 +35,17 @@ export class LoginComponent {
     this.error = null;
     this.auth.login(this.form.value).subscribe({
       next: () => {
-        this.loading = false;
-        this.router.navigate(['/profile']);
+        // Usa refreshUserInfo per aggiornare la cache
+        this.userInfoService.refreshUserInfo().subscribe({
+          next: () => {
+            this.loading = false;
+            this.router.navigate(['/products']);
+          },
+          error: () => {
+            this.loading = false;
+            this.router.navigate(['/profile']);
+          }
+        });
       },
       error: err => {
         this.loading = false;

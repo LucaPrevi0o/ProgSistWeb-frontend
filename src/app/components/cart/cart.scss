@@ -74,6 +74,9 @@
     font-weight: 600;
     text-decoration: none;
     transition: background 0.2s;
+    border: none;
+    outline: none;
+    box-shadow: none;
 
     &:hover {
       background: #218838;

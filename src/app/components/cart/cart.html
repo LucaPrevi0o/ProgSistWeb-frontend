@@ -34,7 +34,7 @@
     <div class="cart-total">
       Totale: <strong>€ {{ getTotal() | number:'1.2-2' }}</strong>
     </div>
-    <a routerLink="/checkout" class="btn-checkout">Procedi al checkout</a>
+    <button class="btn-checkout" (click)="goToCheckout()">Procedi al checkout</button>
   </div>
 
   <div *ngIf="cart && cart.cart_items.length === 0">

@@ -1,0 +1,102 @@
+.user-info-container {
+  max-width: 600px;
+  margin: 3rem auto 0 auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
+
+  h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+
+    .form-row {
+      display: flex;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+
+      .form-section {
+        flex: 1 1 0;
+        margin-bottom: 0; // elimina margine doppio tra i due campi
+      }
+
+      .form-section:first-child {
+        max-width: 75%;
+      }
+      .form-section:last-child {
+        max-width: 25%;
+      }
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.2rem;
+
+      label {
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.3rem;
+      }
+
+      input, textarea {
+        padding: 0.7rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+
+        &:focus {
+          border-color: #007bff;
+          outline: none;
+        }
+      }
+    }
+
+    button[type="submit"] {
+      margin-top: 1rem;
+      padding: 0.8rem 0;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover:not(:disabled) {
+        background-color: #0056b3;
+      }
+
+      &:disabled {
+        background-color: #b0c4de;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+hr {
+border: none;
+border-top: 2px solid #e0e0e0;
+margin: 2rem 0 1.5rem 0;
+width: 100%;
+opacity: 0.8;
+}

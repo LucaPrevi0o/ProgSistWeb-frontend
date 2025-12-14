@@ -1,0 +1,93 @@
+<div class="checkout-page">
+  <div class="checkout-container">
+    <h2>Checkout</h2>
+    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+      <div class="form-section">
+        <label>Cognome</label>
+        <input type="text" formControlName="lastName" required />
+      </div>
+
+      <div class="form-section">
+        <label>Nome</label>
+        <input type="text" formControlName="firstName" required />
+      </div>
+
+      <div class="form-section">
+        <label>Email</label>
+        <input type="email" formControlName="email" required />
+      </div>
+
+      <div class="form-section">
+        <label>Telefono</label>
+        <input type="tel" formControlName="phone" />
+      </div>
+
+      <hr>
+
+      <div formGroupName="address">
+        <h2>Indirizzo di spedizione</h2>
+        <div class="form-row">
+          <div class="form-section">
+            <label for="street">Indirizzo</label>
+            <input id="street" type="text" formControlName="street" required />
+          </div>
+          <div class="form-section">
+            <label for="number">Numero civico</label>
+            <input id="number" type="text" formControlName="number" required />
+          </div>
+        </div>
+        <div class="form-section">
+          <label>Città</label>
+          <input type="text" formControlName="city" required />
+        </div>
+        <div class="form-section">
+          <label>CAP</label>
+          <input type="text" formControlName="zip" required />
+        </div>
+        <div class="form-section">
+          <label>Provincia</label>
+          <input type="text" formControlName="province" required />
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="form-section">
+        <label for="notes">Note per la consegna</label>
+        <textarea id="notes" formControlName="notes"></textarea>
+      </div>
+
+      <button type="submit" [disabled]="checkoutForm.invalid">Conferma ordine</button>
+    </form>
+  </div>
+
+  <div class="cart-summary-container">
+    <h3>Riepilogo ordine</h3>
+    <div *ngIf="cart && cart.cart_items.length > 0; else emptyCart">
+      <table>
+        <thead>
+          <tr>
+            <th>Prodotto</th>
+            <th>Quantità</th>
+            <th>Prezzo</th>
+            <th>Totale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cart.cart_items">
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>€ {{ item.unit_price | number:'1.2-2' }}</td>
+            <td>€ {{ (item.unit_price * item.quantity) | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="cart-total">
+        Totale: <strong>€ {{ getTotal() | number:'1.2-2' }}</strong>
+      </div>
+    </div>
+    <ng-template #emptyCart>
+      <p>Il carrello è vuoto.</p>
+    </ng-template>
+  </div>
+</div>

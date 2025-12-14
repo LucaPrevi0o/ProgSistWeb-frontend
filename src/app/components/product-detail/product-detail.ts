@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ProductService, Product } from '../../services/product';
+import { ProductService, Product } from '../../services/product-service';
 import { CartService, CartItem, Cart } from '../../services/cart-service';
+import { AuthService } from '../../services/auth-service'; // aggiungi questa import
 
 @Component({
   selector: 'app-product-detail',
@@ -18,13 +19,15 @@ export class ProductDetailComponent implements OnInit {
   cart: Cart | null = null;
   cartItem: CartItem | null = null;
   quantity = 1;
+  isLoggedIn = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
     private cdr: ChangeDetectorRef,
-    private cartService: CartService
+    private cartService: CartService,
+    private auth: AuthService // aggiungi qui
   ) {}
 
   ngOnInit(): void {
@@ -35,10 +38,17 @@ export class ProductDetailComponent implements OnInit {
       this.error = 'ID prodotto non valido';
     }
 
-    this.cartService.getCart().subscribe(cart => {
-      this.cart = cart;
-      this.updateCartItem();
-    });
+    // Controlla autenticazione prima di caricare il carrello
+    this.isLoggedIn = this.auth.isAuthenticated();
+    if (this.isLoggedIn) {
+      this.cartService.getCart().subscribe(cart => {
+        this.cart = cart;
+        this.updateCartItem();
+      });
+    } else {
+      this.cart = null;
+      this.cartItem = null;
+    }
   }
 
   updateCartItem(): void {
@@ -46,9 +56,8 @@ export class ProductDetailComponent implements OnInit {
       this.cartItem = this.cart.cart_items.find(
         item => item.product.id === this.product!.id
       ) || null;
-      // Se l'item esiste, aggiorna la quantità selezionata
       this.quantity = 1;
-      this.cdr.detectChanges();
+      // this.cdr.detectChanges(); // Puoi rimuovere questa riga se non hai problemi di UI
     }
   }
 
@@ -58,13 +67,17 @@ export class ProductDetailComponent implements OnInit {
 
     this.productService.getProduct(id).subscribe({
       next: (product) => {
+        console.log('Prodotto caricato:', product);
         this.product = product;
         this.loading = false;
         this.updateCartItem();
+        this.cdr.detectChanges(); // <--- AGGIUNGI QUESTA RIGA
       },
       error: (err) => {
+        console.error('Errore caricamento prodotto:', err);
         this.error = 'Errore nel caricamento del prodotto';
         this.loading = false;
+        this.cdr.detectChanges(); // <--- AGGIUNGI QUESTA RIGA
       }
     });
   }

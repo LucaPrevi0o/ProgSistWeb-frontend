@@ -3,14 +3,10 @@
   <div *ngIf="loading" class="loading">
     <p>Caricamento prodotto...</p>
   </div>
-
-  <!-- Error -->
   <div *ngIf="error" class="error">
     <p>{{ error }}</p>
     <button (click)="goBack()">Torna ai prodotti</button>
   </div>
-
-  <!-- Product Detail -->
   <div *ngIf="!loading && !error && product" class="product-detail">
     <button class="back-button" (click)="goBack()">
       ← Torna ai prodotti
@@ -70,14 +66,16 @@
             </div>
           </div>
 
-          <button class="add-to-cart-btn" (click)="addToCart()" [disabled]="isOutOfStockForUser">
+          <button
+            class="add-to-cart-btn"
+            (click)="addToCart()"
+            [disabled]="isOutOfStockForUser || !isLoggedIn"
+          >
             Aggiungi al carrello
           </button>
-        </div>
-
-        <div class="product-meta">
-          <p><strong>ID:</strong> {{ product.id }}</p>
-          <p><strong>Aggiunto il:</strong> {{ product.created_at | date:'dd/MM/yyyy' }}</p>
+          <div *ngIf="!isLoggedIn" style="color: #c00; margin-top: 0.5rem;">
+            Devi essere loggato per aggiungere al carrello.
+          </div>
         </div>
       </div>
     </div>

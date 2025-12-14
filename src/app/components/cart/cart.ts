@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService, Cart, CartItem } from '../../services/cart-service';
 import { AuthService } from '../../services/auth-service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -19,7 +19,8 @@ export class CartComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private auth: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -63,5 +64,9 @@ export class CartComponent implements OnInit {
 
   getTotal(): number {
     return this.cart?.cart_items.reduce((sum, item) => sum + item.unit_price * item.quantity, 0) || 0;
+  }
+
+  goToCheckout() {
+    this.router.navigate(['/checkout']);
   }
 }

@@ -191,6 +191,11 @@
       &:hover {
         background-color: #218838;
       }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     }
   }
 
@@ -203,5 +208,18 @@
     p {
       margin: 0.25rem 0;
     }
+  }
+
+  input.quantity-value {
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* Firefox */
+    -moz-appearance: textfield;
+    /* Altri browser */
+    appearance: textfield;
   }
 }
