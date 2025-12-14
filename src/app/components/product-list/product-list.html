@@ -1,6 +1,24 @@
 <div class="product-list-container">
   <h1>Catalogo Prodotti</h1>
 
+  <!-- PAGINAZIONE IN ALTO -->
+  <div *ngIf="!loading && !error && total > perPage" class="pagination">
+    <button (click)="goToPage(page - 1)" [disabled]="page === 1">&laquo; Prev</button>
+    <span>
+      Pagina
+      <input
+        type="number"
+        [min]="1"
+        [max]="totalPages()"
+        [value]="page"
+        (change)="onPageInput($event)"
+        style="width: 3em; text-align: center;"
+      />
+      di {{ totalPages() }}
+    </span>
+    <button (click)="goToPage(page + 1)" [disabled]="page === totalPages()">Next &raquo;</button>
+  </div>
+
   <!-- Filtri -->
   <div class="filters">
     <div class="search-box">

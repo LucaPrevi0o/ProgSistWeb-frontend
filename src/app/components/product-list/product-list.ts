@@ -2,9 +2,10 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ProductService, Product } from '../../services/product';
+import { ProductService, Product } from '../../services/product-service';
 import { environment } from '../../../environments/environment';
 import { CartService, Cart } from '../../services/cart-service';
+import { AuthService } from '../../services/auth-service'; // <--- aggiungi questa import
 
 @Component({
   selector: 'app-product-list',
@@ -25,18 +26,43 @@ export class ProductListComponent implements OnInit {
 
   cart: Cart | null = null;
 
+  // Paginazione
+  page = 1;
+  perPage = 6;
+  total = 0;
+
   constructor(
     private productService: ProductService,
     private cartService: CartService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService // <--- aggiungi qui
   ) {}
 
   ngOnInit(): void {
     console.log('Component initialized');
-    this.cartService.refreshCart();
+    // Carica il carrello solo se autenticato
+    if (this.auth.isAuthenticated()) {
+      this.cartService.getCartObservable().subscribe(cart => {
+        this.cart = cart;
+      });
+      this.cartService.refreshCart();
+    } else {
+      this.cart = null;
+    }
+    this.loadCategories();
     this.loadProducts();
-    this.cartService.getCartObservable().subscribe(cart => {
-      this.cart = cart;
+  }
+
+  loadCategories(): void {
+    this.productService.getCategories().subscribe({
+      next: (categories) => {
+        console.log('Categorie caricate:', categories);
+        this.categories = categories;
+      },
+      error: (err) => {
+        console.error('Errore caricamento categorie:', err);
+        this.categories = [];
+      }
     });
   }
 
@@ -45,8 +71,11 @@ export class ProductListComponent implements OnInit {
     this.loading = true;
     this.error = null;
     this.cdr.markForCheck();
-    
-    const filters: any = {};
+
+    const filters: any = {
+      page: this.page,
+      per_page: this.perPage
+    };
     if (this.searchQuery) filters.q = this.searchQuery;
     if (this.selectedCategory) filters.category = this.selectedCategory;
 
@@ -54,10 +83,12 @@ export class ProductListComponent implements OnInit {
     console.log('With filters:', filters);
 
     this.productService.getProducts(filters).subscribe({
-      next: (products) => {
-        console.log('SUCCESS: Received products:', products);
-        this.products = products;
-        this.extractCategories(products);
+      next: (res) => {
+        console.log('SUCCESS: Received products:', res);
+        this.products = res.products;
+        this.total = res.total;
+        // RIMUOVI o COMMENTA questa riga:
+        // this.extractCategories(res.products);
         this.loading = false;
         console.log('Setting loading = false');
         this.cdr.detectChanges(); // Forza aggiornamento UI
@@ -106,5 +137,23 @@ export class ProductListComponent implements OnInit {
     if (!this.cart) return 0;
     const item = this.cart.cart_items.find(i => i.product.id === productId);
     return item ? item.quantity : 0;
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages()) return;
+    this.page = page;
+    this.loadProducts();
+  }
+
+  totalPages(): number {
+    return Math.ceil(this.total / this.perPage);
+  }
+
+  onPageInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = parseInt(input.value, 10);
+    if (isNaN(value) || value < 1) value = 1;
+    if (value > this.totalPages()) value = this.totalPages();
+    this.goToPage(value);
   }
 }

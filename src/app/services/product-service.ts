@@ -25,31 +25,9 @@ export class ProductService {
     console.log('ProductService initialized with apiUrl:', this.apiUrl);
   }
 
-  getProducts(filters?: {
-    category?: string;
-    q?: string;
-    page?: number;
-    per_page?: number;
-  }): Observable<Product[]> {
-    let params = new HttpParams();
-    
-    if (filters) {
-      if (filters.category) params = params.set('category', filters.category);
-      if (filters.q) params = params.set('q', filters.q);
-      if (filters.page) params = params.set('page', filters.page.toString());
-      if (filters.per_page) params = params.set('per_page', filters.per_page.toString());
-    }
-
-    const url = `${this.apiUrl}?${params.toString()}`;
-    console.log('Making HTTP GET request to:', url);
-
-    return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
-      tap(response => console.log('HTTP response received:', response)),
-      catchError(error => {
-        console.error('HTTP error occurred:', error);
-        throw error;
-      })
-    );
+  getProducts(filters: any = {}): Observable<any> {
+    const params: any = { ...filters };
+    return this.http.get<any>(this.apiUrl, { params });
   }
 
   getProduct(id: number): Observable<Product> {
@@ -67,5 +45,9 @@ export class ProductService {
 
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${environment.apiUrl}/products/categories`);
   }
 }
