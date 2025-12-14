@@ -50,12 +50,15 @@
         <p class="price">€ {{ product.price | number:'1.2-2' }}</p>
         <p class="stock" [class.out-of-stock]="product.stock_quantity === 0">
           {{ product.stock_quantity > 0 ? 'Disponibile' : 'Esaurito' }}
+          <span *ngIf="getCartQuantity(product.id) > 0" style="margin-left: 1em;">
+            Nel carrello: <strong>{{ getCartQuantity(product.id) }}</strong>
+          </span>
+        </p>
+        <p *ngIf="product.stock_quantity === 0" class="out-of-stock">
+          ✗ Non disponibile
         </p>
         <div class="actions">
           <a [routerLink]="['/products', product.id]" class="btn-detail">Dettagli</a>
-          <button class="btn-cart" [disabled]="product.stock_quantity === 0">
-            Aggiungi al carrello
-          </button>
         </div>
       </div>
     </div>

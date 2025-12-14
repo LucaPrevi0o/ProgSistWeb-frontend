@@ -49,13 +49,28 @@
           <div class="quantity-selector">
             <label>Quantità:</label>
             <div class="quantity-controls">
-              <button (click)="decreaseQuantity()" [disabled]="quantity <= 1">-</button>
-              <span class="quantity-value">{{ quantity }}</span>
-              <button (click)="increaseQuantity()" [disabled]="quantity >= product.stock_quantity">+</button>
+              <button (click)="decreaseQuantity()" [disabled]="quantity <= 1 || isOutOfStockForUser">-</button>
+              <input
+                type="number"
+                class="quantity-value"
+                [min]="1"
+                [max]="maxSelectableQuantity"
+                [value]="quantity"
+                (input)="onQuantityInput($event)"
+                (blur)="onQuantityBlur()"
+                [disabled]="isOutOfStockForUser"
+              />
+              <button (click)="increaseQuantity()" [disabled]="quantity >= maxSelectableQuantity || isOutOfStockForUser">+</button>
+            </div>
+            <div *ngIf="cartItem" class="in-cart-info" style="margin-top: 0.5rem;">
+              Nel carrello: <strong>{{ cartItem.quantity }}</strong> pezz{{ cartItem.quantity > 1 ? 'i' : 'o' }}
+            </div>
+            <div *ngIf="isOutOfStockForUser" class="out-of-stock-info" style="color: #c00; margin-top: 0.5rem;">
+              Hai già aggiunto tutti i pezzi disponibili al carrello.
             </div>
           </div>
 
-          <button class="add-to-cart-btn" (click)="addToCart()">
+          <button class="add-to-cart-btn" (click)="addToCart()" [disabled]="isOutOfStockForUser">
             Aggiungi al carrello
           </button>
         </div>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductService, Product } from '../../services/product';
 import { environment } from '../../../environments/environment';
+import { CartService, Cart } from '../../services/cart-service';
 
 @Component({
   selector: 'app-product-list',
@@ -22,14 +23,21 @@ export class ProductListComponent implements OnInit {
   selectedCategory = '';
   categories: string[] = [];
 
+  cart: Cart | null = null;
+
   constructor(
     private productService: ProductService,
+    private cartService: CartService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     console.log('Component initialized');
+    this.cartService.refreshCart();
     this.loadProducts();
+    this.cartService.getCartObservable().subscribe(cart => {
+      this.cart = cart;
+    });
   }
 
   loadProducts(): void {
@@ -92,5 +100,11 @@ export class ProductListComponent implements OnInit {
 
   onImageError(event: any): void {
     event.target.src = 'https://placehold.co/300x200/cccccc/666666?text=No+Image';
+  }
+
+  getCartQuantity(productId: number): number {
+    if (!this.cart) return 0;
+    const item = this.cart.cart_items.find(i => i.product.id === productId);
+    return item ? item.quantity : 0;
   }
 }

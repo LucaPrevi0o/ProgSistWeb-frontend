@@ -8,7 +8,7 @@
         <li><a routerLink="/orders">Ordini</a></li>
         <li *ngIf="!user"><a routerLink="/login">Login</a></li>
         <li *ngIf="user" class="profile-menu">
-          <a routerLink="/profile">My Profile</a>
+          <a routerLink="/profile">Il mio profilo</a>
           -
           <a href="#" (click)="logout()">Logout</a>
         </li>
