@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -34,8 +34,7 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private cartService: CartService,
-    private cdr: ChangeDetectorRef,
-    private auth: AuthService // <--- aggiungi qui
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -54,23 +53,14 @@ export class ProductListComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.productService.getCategories().subscribe({
-      next: (categories) => {
-        console.log('Categorie caricate:', categories);
-        this.categories = categories;
-      },
-      error: (err) => {
-        console.error('Errore caricamento categorie:', err);
-        this.categories = [];
-      }
+    this.productService.getCategories().subscribe(categories => {
+      this.categories = categories;
     });
   }
 
   loadProducts(): void {
-    console.log('loadProducts started, setting loading = true');
     this.loading = true;
     this.error = null;
-    this.cdr.markForCheck();
 
     const filters: any = {
       page: this.page,
@@ -79,34 +69,10 @@ export class ProductListComponent implements OnInit {
     if (this.searchQuery) filters.q = this.searchQuery;
     if (this.selectedCategory) filters.category = this.selectedCategory;
 
-    console.log('Starting HTTP call to:', `${environment.apiUrl}/products`);
-    console.log('With filters:', filters);
-
-    this.productService.getProducts(filters).subscribe({
-      next: (res) => {
-        console.log('SUCCESS: Received products:', res);
-        this.products = res.products;
-        this.total = res.total;
-        // RIMUOVI o COMMENTA questa riga:
-        // this.extractCategories(res.products);
-        this.loading = false;
-        console.log('Setting loading = false');
-        this.cdr.detectChanges(); // Forza aggiornamento UI
-      },
-      error: (err) => {
-        console.error('ERROR: Failed to load products:', err);
-        console.error('Error details:', {
-          message: err.message,
-          status: err.status,
-          statusText: err.statusText
-        });
-        this.error = 'Errore nel caricamento dei prodotti';
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      complete: () => {
-        console.log('HTTP call completed');
-      }
+    this.productService.getProducts(filters).subscribe(res => {
+      this.products = res.products;
+      this.total = res.total;
+      this.loading = false;
     });
   }
 

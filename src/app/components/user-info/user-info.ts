@@ -63,12 +63,8 @@ export class UserInfoComponent implements OnInit {
         address_attributes: formValue.address
       }
     };
-    this.userInfoService.saveUserInfo(payload).subscribe({
-      next: () => {
-        alert('Informazioni salvate con successo!');
-        this.router.navigate(['/profile']);
-      },
-      error: () => alert('Errore nel salvataggio delle informazioni.')
+    this.userInfoService.saveUserInfo(payload).subscribe(() => {
+      this.router.navigate(['/profile']);
     });
   }
 }

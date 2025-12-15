@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
-import { UserInfoService } from '../../services/user-info-service'; // <--- importa il servizio
+import { UserInfoService } from '../../services/user-info-service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +20,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private userInfoService: UserInfoService, // <--- aggiungi qui
+    private userInfoService: UserInfoService,
     private router: Router
   ) {
     this.form = this.fb.group({
@@ -33,24 +33,11 @@ export class LoginComponent {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = null;
-    this.auth.login(this.form.value).subscribe({
-      next: () => {
-        // Usa refreshUserInfo per aggiornare la cache
-        this.userInfoService.refreshUserInfo().subscribe({
-          next: () => {
-            this.loading = false;
-            this.router.navigate(['/products']);
-          },
-          error: () => {
-            this.loading = false;
-            this.router.navigate(['/profile']);
-          }
-        });
-      },
-      error: err => {
+    this.auth.login(this.form.value).subscribe(() => {
+      this.userInfoService.refreshUserInfo().subscribe(() => {
         this.loading = false;
-        this.error = err.error?.error || 'Login fallito';
-      }
+        this.router.navigate(['/products']);
+      });
     });
   }
 }

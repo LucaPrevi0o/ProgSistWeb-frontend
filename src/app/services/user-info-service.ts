@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface Address {
@@ -33,22 +33,14 @@ export class UserInfoService {
     }
     // Altrimenti fai la richiesta e aggiorna la cache
     return this.http.get<UserInfo>(this.apiUrl).pipe(
-      tap(info => this.userInfoSubject.next(info)),
-      catchError(() => {
-        this.userInfoSubject.next(null);
-        return of(null);
-      })
+      tap(info => this.userInfoSubject.next(info))
     );
   }
 
   // Metodo per forzare l’aggiornamento (es. dopo login)
   refreshUserInfo(): Observable<UserInfo | null> {
     return this.http.get<UserInfo>(this.apiUrl).pipe(
-      tap(info => this.userInfoSubject.next(info)),
-      catchError(() => {
-        this.userInfoSubject.next(null);
-        return of(null);
-      })
+      tap(info => this.userInfoSubject.next(info))
     );
   }
 

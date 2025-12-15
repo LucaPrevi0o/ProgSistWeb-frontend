@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth-service';
+import { tap } from 'rxjs/operators';
 
 export interface CartItem {
   id: number;
@@ -34,11 +35,7 @@ export class CartService {
       return of(null as any);
     }
     return this.http.get<Cart>(this.apiUrl).pipe(
-      tap(cart => this.cartSubject.next(cart)),
-      catchError(() => {
-        this.cartSubject.next(null);
-        return of(null as any);
-      })
+      tap(cart => this.cartSubject.next(cart))
     );
   }
 

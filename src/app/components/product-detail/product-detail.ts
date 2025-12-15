@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService, Product } from '../../services/product-service';
 import { CartService, CartItem, Cart } from '../../services/cart-service';
-import { AuthService } from '../../services/auth-service'; // aggiungi questa import
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-product-detail',
@@ -25,9 +25,8 @@ export class ProductDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private cdr: ChangeDetectorRef,
     private cartService: CartService,
-    private auth: AuthService // aggiungi qui
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -38,7 +37,6 @@ export class ProductDetailComponent implements OnInit {
       this.error = 'ID prodotto non valido';
     }
 
-    // Controlla autenticazione prima di caricare il carrello
     this.isLoggedIn = this.auth.isAuthenticated();
     if (this.isLoggedIn) {
       this.cartService.getCart().subscribe(cart => {
@@ -57,7 +55,6 @@ export class ProductDetailComponent implements OnInit {
         item => item.product.id === this.product!.id
       ) || null;
       this.quantity = 1;
-      // this.cdr.detectChanges(); // Puoi rimuovere questa riga se non hai problemi di UI
     }
   }
 
@@ -65,20 +62,10 @@ export class ProductDetailComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.productService.getProduct(id).subscribe({
-      next: (product) => {
-        console.log('Prodotto caricato:', product);
-        this.product = product;
-        this.loading = false;
-        this.updateCartItem();
-        this.cdr.detectChanges(); // <--- AGGIUNGI QUESTA RIGA
-      },
-      error: (err) => {
-        console.error('Errore caricamento prodotto:', err);
-        this.error = 'Errore nel caricamento del prodotto';
-        this.loading = false;
-        this.cdr.detectChanges(); // <--- AGGIUNGI QUESTA RIGA
-      }
+    this.productService.getProduct(id).subscribe(product => {
+      this.product = product;
+      this.loading = false;
+      this.updateCartItem();
     });
   }
 
@@ -96,15 +83,8 @@ export class ProductDetailComponent implements OnInit {
 
   addToCart(): void {
     if (this.product) {
-      this.cartService.addItem(this.product.id, this.quantity).subscribe({
-        next: () => {
-          // alert(`${this.quantity}x ${this.product!.name} aggiunto al carrello!`);
-          this.router.navigate(['/cart']); // Naviga al carrello dopo l'aggiunta
-        },
-        error: (err) => {
-          alert('Errore durante l\'aggiunta al carrello');
-          console.error(err);
-        }
+      this.cartService.addItem(this.product.id, this.quantity).subscribe(() => {
+        this.router.navigate(['/cart']);
       });
     }
   }

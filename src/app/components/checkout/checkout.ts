@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { CartService, Cart } from '../../services/cart-service';
 import { UserInfoService } from '../../services/user-info-service';
-import { AuthService } from '../../services/auth-service'; // <--- aggiungi questa import
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-checkout',
@@ -20,7 +20,7 @@ export class CheckoutComponent {
     private cartService: CartService,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    private auth: AuthService // <--- aggiungi qui
+    private auth: AuthService
   ) {
     this.checkoutForm = this.fb.group({
       lastName: ['', Validators.required],
@@ -41,7 +41,6 @@ export class CheckoutComponent {
     this.cartService.getCartObservable().subscribe(cart => this.cart = cart);
     this.cartService.refreshCart();
 
-    // Precompila il form con UserInfo
     this.userInfoService.getUserInfo().subscribe(userInfo => {
       if (userInfo) {
         this.checkoutForm.patchValue({
@@ -59,7 +58,6 @@ export class CheckoutComponent {
       }
     });
 
-    // Precompila il campo email con l'utente autenticato
     this.auth.getCurrentUser().subscribe(user => {
       if (user) {
         this.checkoutForm.patchValue({
